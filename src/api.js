@@ -1,4 +1,6 @@
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+// Accepts https://host, https://host/ or https://host/api — always ends up as https://host/api
+const ROOT = (import.meta.env.VITE_API_URL || 'http://localhost:5000').trim().replace(/\/+$/, '').replace(/\/api$/, '')
+const BASE = ROOT + '/api'
 const call = async (path, opts) => {
   try { const r = await fetch(BASE + path, { headers: { 'Content-Type': 'application/json' }, ...opts }); return r.ok ? await r.json() : null }
   catch { return null }
@@ -15,6 +17,6 @@ export const api = {
   upload: fd => call('/upload', { method: 'POST', body: fd, headers: {} }),
   del: id => call('/notes/' + id, { method: 'DELETE' }),
   edit: (id, b) => call('/notes/' + id, { method: 'PUT', body: JSON.stringify(b) }),
-  fileUrl: f => BASE.replace('/api', '') + '/uploads/' + f,
+  fileUrl: f => ROOT + '/uploads/' + f,
   request: b => post('/requests', b),
 }
